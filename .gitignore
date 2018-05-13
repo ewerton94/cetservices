@@ -1,1 +1,3 @@
-/cetservices/secret.py
+cetservices/secret.py
+*.pyc
+*.sqlite3
