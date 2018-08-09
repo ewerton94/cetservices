@@ -13,7 +13,6 @@ https://docs.djangoproject.com/en/2.0/ref/settings/
 import os
 
 try:
-    #Para uso em modo de produção
     from .secret import *
     SECRET_KEY = SECRET_KEY
     ALLOWED_HOSTS = ALLOWED_HOSTS

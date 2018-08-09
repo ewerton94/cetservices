@@ -8,7 +8,9 @@ from .models import Debt, Entrance, DebtInfo, Student
 from .forms import EntranceForm
 from django.core.mail import send_mail
 from django.conf import settings
-
+import sys
+reload(sys)  
+sys.setdefaultencoding('utf8')
 
 
 
@@ -32,6 +34,8 @@ def get_debt_description():
             email = data['email'].values[0]
         descricao = data['descricao'].values
         valor = data['valor'].values
+        if sys.version_info[0] < 3: # Python 3
+            descricao = [d.encode('utf8') for d in descricao]
         ds = '\n'.join([str(d[0]) + ' - R$ ' +  str(d[1]) for d in list(zip(descricao, valor))])
         students.append({'nome': row, 'email': email, 'total': value, 'description': ds})
     return students
