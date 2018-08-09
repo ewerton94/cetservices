@@ -11,7 +11,26 @@ https://docs.djangoproject.com/en/2.0/ref/settings/
 """
 
 import os
-from .secret import *
+
+try:
+    #Para uso em modo de produção
+    from .secret import *
+    SECRET_KEY = SECRET_KEY
+    ALLOWED_HOSTS = ALLOWED_HOSTS
+    EMAIL_USE_TLS = EMAIL_USE_TLS
+    EMAIL_HOST = EMAIL_HOST
+    EMAIL_PORT = EMAIL_PORT
+    EMAIL_HOST_USER = EMAIL_HOST_USER
+    EMAIL_HOST_PASSWORD = EMAIL_HOST_PASSWORD
+    BASE_URL_SITE = BASE_URL_SITE
+    DEBUG = DEBUG
+    MERCADO_PAGO_KEY = MERCADO_PAGO_KEY
+except:
+    # Par uso em modo de desenvolcimento
+    SECRET_KEY = "any_secret_key"
+    ALLOWED_HOSTS = []
+    BASE_URL_SITE=''
+
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -20,11 +39,9 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.0/howto/deployment/checklist/
 
-SECRET_KEY = SECRET_KEY
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
 
-ALLOWED_HOSTS = []
+# SECURITY WARNING: don't run with debug turned on in production!
+
 
 
 # Application definition
@@ -54,7 +71,7 @@ ROOT_URLCONF = 'cetservices.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'templates'),],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -117,4 +134,15 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
 
-STATIC_URL = '/static/'
+STATIC_URL = '%s/static/'%BASE_URL_SITE
+
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static'),
+]
+
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+
+
+DEFAULT_FROM_EMAIL='FINANCEIRO DO PET <%s>'% EMAIL_HOST_USER
+EMAIL_HOST_PASSWORD = EMAIL_HOST_PASSWORD

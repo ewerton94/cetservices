@@ -14,9 +14,15 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import include, path
+from django.conf.urls import include, url
+from financial.views import home, export_debts_excel, make_penalties, send_mail_to_debtors
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('financial/', include('financial.urls')),
+    url('admin/', admin.site.urls),
+    url('^$', home, name='home'),
+    url('^debtors.xlsx$', export_debts_excel, name='export_debts_excel'),
+    url('^make_penalties$', make_penalties, name='make_penalties'),
+    url('^send_mail_to_debtors$', send_mail_to_debtors, name='send_mail_to_debtors'),
+    
+    #path('financial/', include('financial.urls')),
 ]
