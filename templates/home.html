@@ -14,7 +14,7 @@
       <!-- Small boxes (Stat box) -->
       <div class="row">
        {% if user.is_staff %}
-       <a href="/debtors.xlsx"><div class="col-md-3 col-sm-6 col-xs-12">
+       <a href="{{ BASE_URL_SITE }}/debtors.xlsx"><div class="col-md-3 col-sm-6 col-xs-12">
           <div class="info-box">
             <span class="info-box-icon bg-green"><i class="fa fa-file-excel-o"></i></span>
 
@@ -41,7 +41,7 @@
           <!-- /.info-box -->
         </div></a>
         {% if user.is_staff %}
-        <a href="/make_penalties"><div class="col-md-3 col-sm-6 col-xs-12">
+        <a href="{{ BASE_URL_SITE }}/make_penalties"><div class="col-md-3 col-sm-6 col-xs-12">
             <div class="info-box">
                 <span class="info-box-icon bg-red"><i class="fa fa-exclamation-triangle"></i></span>
   
@@ -54,7 +54,7 @@
             <!-- /.info-box -->
           </div></a>
           
-          <a href="/send_mail_to_debtors"><div class="col-md-3 col-sm-6 col-xs-12">
+          <a href="{{ BASE_URL_SITE }}/send_mail_to_debtors"><div class="col-md-3 col-sm-6 col-xs-12">
             <div class="info-box">
                 <span class="info-box-icon bg-yellow"><i class="fa fa-exclamation-triangle"></i></span>
   

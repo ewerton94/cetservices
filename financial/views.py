@@ -52,7 +52,7 @@ def home(request):
         student = Student.objects.get(name=desc['nome'])
         student.total = desc['total']
         students.append(student)
-    return render(request, 'home.html', {'entrances': entrances, 'cash': cash, 'forms': forms, 'students': students})
+    return render(request, 'home.html', {'entrances': entrances, 'cash': cash, 'forms': forms, 'students': students, 'BASE_URL_SITE': settings.BASE_URL_SITE})
 
 def make_penalties(request):
     for debt_info in DebtInfo.objects.filter(type='1'):
