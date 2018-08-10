@@ -56,7 +56,7 @@
           
           <a href="{{ BASE_URL_SITE }}/send_mail_to_debtors"><div class="col-md-3 col-sm-6 col-xs-12">
             <div class="info-box">
-                <span class="info-box-icon bg-yellow"><i class="fa fa-exclamation-triangle"></i></span>
+                <span class="info-box-icon bg-yellow"><i class="fa fa-envelope"></i></span>
   
               <div class="info-box-content">
                 <span class="header">Email</span>
@@ -151,6 +151,7 @@
 <tr>
 <th>{% blocktrans  %}Valor{% endblocktrans %}</th>
 <th>{% blocktrans  %}Petiano{% endblocktrans %}</th>
+<th>{% blocktrans  %}Opções{% endblocktrans %}</th>
 </tr>
 </thead>
 <tbody>
@@ -161,6 +162,7 @@
   {% else %} <b style="color:darkred">{{ entrance.total }}</b> {% endif %}
 </td>
 <td>{{ entrance.name }}</td>
+<td><a href="{{ BASE_URL_SITE }}/send_email_situation/{{ entrance.id }}"><i class="fa fa-envelope"></i></a></td>
 </tr>
 {% endfor %}
 

@@ -9,22 +9,24 @@ from .forms import EntranceForm
 from django.core.mail import send_mail
 from django.conf import settings
 import sys
-reload(sys)  
-sys.setdefaultencoding('utf8')
+#reload(sys)  
+#sys.setdefaultencoding('utf8')
 
 
 
-def get_gebtors():
+def get_debtors():
     students = []
-    ds = {'descricao': [], 'valor': [], 'email': []}
+    ds = {'descricao': [], 'valor': [], 'email': [], 'id': []}
     for debt in Debt.objects.filter(paid=False, exemption=False).order_by('student'):
         students.append(debt.student.name)
+        ds['id'].append(debt.student.id)
         ds['email'].append(debt.student.email)
         ds['descricao'].append(str(debt.debt_info))
         ds['valor'].append(debt.debt_info.value + debt.debt_info.penalty-debt.discount)
+
     return pd.DataFrame(ds, index=students)
 def get_debt_description():
-    df = get_gebtors()
+    df = get_debtors()
     total = df.groupby(df.index).valor.sum()
     students = []
     for row in total.index:
@@ -37,7 +39,7 @@ def get_debt_description():
         if sys.version_info[0] < 3: # Python 3
             descricao = [d.encode('utf8') for d in descricao]
         ds = '\n'.join([str(d[0]) + ' - R$ ' +  str(d[1]) for d in list(zip(descricao, valor))])
-        students.append({'nome': row, 'email': email, 'total': value, 'description': ds})
+        students.append({'id': data['id'].values[0],'nome': row, 'email': email, 'total': value, 'description': ds})
     return students
 
 def home(request):
@@ -61,7 +63,18 @@ def make_penalties(request):
     return HttpResponseRedirect('/')
 
 
-
+def send_email_situation(request, id):
+    for student in get_debt_description():
+        if int(student['id'])==int(id):
+            msg = 'Olá %s, já observou como o dia está lindo? Os passaros cantam, o céu está azul e as árvores balançam. Um belo dia para pagar uma de suas dívidas, não acha? Segue abaixo a sua dívida com o PET CT: \n\n%s\n\nValor total a pagar: %.2f'%(student['nome'], student['description'], student['total'])
+            send_mail(
+                'Oi, Coleguinha. Mensagem pra você!!! :)',
+                msg,
+                settings.DEFAULT_FROM_EMAIL,
+                [student['email']],
+                fail_silently=False,
+            )
+    return HttpResponseRedirect('/')
 
 
 def send_mail_to_debtors(request):

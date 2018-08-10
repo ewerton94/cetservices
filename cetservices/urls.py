@@ -15,7 +15,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.conf.urls import include, url
-from financial.views import home, export_debts_excel, make_penalties, send_mail_to_debtors
+from financial.views import home, export_debts_excel, make_penalties, send_mail_to_debtors, send_email_situation
 
 urlpatterns = [
     url('admin/', admin.site.urls),
@@ -23,6 +23,9 @@ urlpatterns = [
     url('^debtors.xlsx$', export_debts_excel, name='export_debts_excel'),
     url('^make_penalties$', make_penalties, name='make_penalties'),
     url('^send_mail_to_debtors$', send_mail_to_debtors, name='send_mail_to_debtors'),
+    url('^send_email_situation/(?P<id>\d+)$', send_email_situation, name='send_email_situation'),
+    
+
     
     #path('financial/', include('financial.urls')),
 ]
