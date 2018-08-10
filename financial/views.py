@@ -60,7 +60,7 @@ def make_penalties(request):
     for debt_info in DebtInfo.objects.filter(type='1'):
         debt_info.penalty = debt_info.penalty + 5
         debt_info.save()
-    return HttpResponseRedirect('/')
+    return HttpResponseRedirect(settings.BASE_URL_SITE + '/')
 
 
 def send_email_situation(request, id):
@@ -74,7 +74,7 @@ def send_email_situation(request, id):
                 [student['email']],
                 fail_silently=False,
             )
-    return HttpResponseRedirect('/')
+    return HttpResponseRedirect(settings.BASE_URL_SITE + '/')
 
 
 def send_mail_to_debtors(request):
@@ -88,7 +88,7 @@ def send_mail_to_debtors(request):
             [student['email']],
             fail_silently=False,
         )
-    return HttpResponseRedirect('/')
+    return HttpResponseRedirect(settings.BASE_URL_SITE + '/')
 
 
 
