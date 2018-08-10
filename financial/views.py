@@ -9,8 +9,8 @@ from .forms import EntranceForm
 from django.core.mail import send_mail
 from django.conf import settings
 import sys
-#reload(sys)  
-#sys.setdefaultencoding('utf8')
+reload(sys)  
+sys.setdefaultencoding('utf8')
 
 
 
