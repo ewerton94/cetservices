@@ -151,7 +151,7 @@
 <tr>
 <th>{% blocktrans  %}Valor{% endblocktrans %}</th>
 <th>{% blocktrans  %}Petiano{% endblocktrans %}</th>
-<th>{% blocktrans  %}Opções{% endblocktrans %}</th>
+{% if user.is_staff %}<th>{% blocktrans  %}Opções{% endblocktrans %}</th>{% endif %}
 </tr>
 </thead>
 <tbody>
@@ -162,7 +162,7 @@
   {% else %} <b style="color:darkred">{{ entrance.total }}</b> {% endif %}
 </td>
 <td>{{ entrance.name }}</td>
-<td><a href="{{ BASE_URL_SITE }}/send_email_situation/{{ entrance.id }}"><i class="fa fa-envelope"></i></a></td>
+{% if user.is_staff %}<td><a href="{{ BASE_URL_SITE }}/send_email_situation/{{ entrance.id }}"><i class="fa fa-envelope"></i></a></td>{% endif %}
 </tr>
 {% endfor %}
 
