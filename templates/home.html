@@ -12,6 +12,14 @@
     <!-- Main content -->
     <section class="content">
       <!-- Small boxes (Stat box) -->
+      {% for message in messages %}
+      <div ><div class="alert alert-{{ message.tags }}" role="alert">
+          {{ message }}
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div></div>
+      {% endfor %}
       <div class="row">
        {% if user.is_staff %}
        <a href="{{ BASE_URL_SITE }}/debtors.xlsx"><div class="col-md-3 col-sm-6 col-xs-12">
@@ -244,9 +252,9 @@
 
           <div class="box box-solid bg-blue-gradient">
             <div class="box-header">
-              <i class="glyphicon glyphicon-stats"></i>
+              <i class="fa fa-usd"></i>
 
-              <h3 class="box-title">Criar Débito específico</h3>
+              <h3 class="box-title">{{ form.title }}</h3>
 
               <div class="box-tools pull-right">
                

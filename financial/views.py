@@ -5,12 +5,15 @@ from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
 from io import BytesIO as IO
 from .models import Debt, Entrance, DebtInfo, Student
-from .forms import EntranceForm
+from .forms import EntranceForm, CreditForm
 from django.core.mail import send_mail
 from django.conf import settings
 import sys
-reload(sys)  
-sys.setdefaultencoding('utf8')
+from django.contrib import messages
+
+if sys.version_info[0] < 3:
+    reload(sys)  
+    sys.setdefaultencoding('utf8')
 
 
 
@@ -43,13 +46,29 @@ def get_debt_description():
     return students
 
 def home(request):
+    if request.method == 'POST':
+        credit_form = CreditForm(request.POST, prefix='credit')
+        entrance_form = EntranceForm(request.POST, prefix='entrance')
+        if credit_form.is_valid():
+            credit_form.save()
+            messages.add_message(request, messages.SUCCESS, "Pagamento cadastrado!")
+        elif entrance_form.is_valid():
+            entrance_form.save()
+            messages.add_message(request, messages.SUCCESS, "Fluxo de caixa alterado com sucesso!")
+        else:
+            messages.add_message(request, messages.ERROR, "Algo ocorreu errado!")
+            
     entrances = Entrance.objects.all()
     cash = round(sum([e.value for e in entrances]), 2)
     entrances = entrances.order_by('-id')[:5]
-    forms = [EntranceForm,]
+    credit_form = CreditForm(prefix='credit')
+    credit_form.title = 'Cadastrar pagamento de dívida'
+    entrance_form = EntranceForm(prefix='entrance')
+    entrance_form.title = 'Cadastrar entrada ou saída de dinheiro'
+    forms = [credit_form, entrance_form]
     students = []
     descriptions = get_debt_description()
-    print(descriptions)
+    #print(descriptions)
     for desc in descriptions:
         student = Student.objects.get(name=desc['nome'])
         student.total = desc['total']
@@ -60,6 +79,7 @@ def make_penalties(request):
     for debt_info in DebtInfo.objects.filter(type='1'):
         debt_info.penalty = debt_info.penalty + 5
         debt_info.save()
+    messages.add_message(request, messages.SUCCESS, "Multas adicionadas!")
     return HttpResponseRedirect(settings.BASE_URL_SITE + '/')
 
 
@@ -74,6 +94,7 @@ def send_email_situation(request, id):
                 [student['email']],
                 fail_silently=False,
             )
+            messages.add_message(request, messages.SUCCESS, "Email de cobrança enviado para %s com sucesso."%student['email'])
     return HttpResponseRedirect(settings.BASE_URL_SITE + '/')
 
 
@@ -88,6 +109,7 @@ def send_mail_to_debtors(request):
             [student['email']],
             fail_silently=False,
         )
+    messages.add_message(request, messages.SUCCESS, "Email de cobrança enviado para todos os petianos devedores.")
     return HttpResponseRedirect(settings.BASE_URL_SITE + '/')
 
 
@@ -109,6 +131,7 @@ def export_debts_excel(request):
     workbook = sio.getvalue()
     response = HttpResponse(sio.read(), content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
     response['Content-Disposition'] = 'attachment; filename=%s' % 'devedores.xlsx'
+    #messages.add_message(request, messages.SUCCESS, "Planilha de dívidas gerada com sucesso.")
     return response
 
 '''
