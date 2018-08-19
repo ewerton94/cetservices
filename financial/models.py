@@ -6,8 +6,21 @@ import datetime
 from django.conf import settings
 from django.utils import timezone
 from django.core.mail import send_mail
+from itertools import combinations
+import threading
 
 DEBT_TYPES = {'1': "IPC", '2': "Café", '3': "Outro"}
+
+class EmailThread(threading.Thread):
+    def __init__(self, subject, html_content, from_email, recipient_list):
+        self.subject = subject
+        self.recipient_list = recipient_list
+        self.html_content = html_content
+        self.from_email = from_email
+        threading.Thread.__init__(self)
+
+    def run (self):
+        send_mail(self.subject, self.html_content, self.from_email, self.recipient_list, fail_silently=True)
 
 class Student(models.Model):
     """
@@ -120,11 +133,11 @@ class Debt(models.Model):
 
                 print(mes)
                 print(to_list)
-                send_mail('Pagamento Total de Dívida!',mes,from_email,to_list,fail_silently=True)
+                EmailThread('Pagamento Total de Dívida!',mes,from_email,to_list).start()
             elif old_debt.exemption==False and self.exemption:
                 mes = "Isenção realizada: %s\n\nAtenciosamente,\n\nComissão de Financeiro do PET Ciência e Tecnologia"%(self.debt_info.__unicode__())
                 print(mes)
-                send_mail('Isenção de Dívida!',mes,from_email,to_list,fail_silently=True)
+                EmailThread('Isenção de Dívida!',mes,from_email,to_list).start()
             else:
                 print('N mandou email')
                 #send_mail('Pagamento IPC []!'%self.,mes,from_email,to_list,fail_silently=True)
@@ -148,10 +161,39 @@ class Credit(models.Model):
     def save(self):
         print(self.id)
         if not self.id:
-            debts_to_pay = sorted(sorted(sorted(sorted(self.get_debts_to_pay(), key=lambda x: x.id), key=lambda x: x.debt_info.type), key=lambda x:x.debt_info.year),  key=lambda x: x.debt_info.month) 
-            
-            value_to_pay = sum([d.debt_info.value + d.debt_info.penalty for d in debts_to_pay])
+            ds = self.get_debts_to_pay()
+            dict_debts = {}
+            for d in ds:
+                dict_debts.setdefault(d.debt_info.value - d.discount + d.debt_info.penalty, []).append(d)  
+            value_to_pay = sum([d.debt_info.value - d.discount + d.debt_info.penalty for d in ds])
             total = self.student.balance + self.value
+            if value_to_pay != total:
+                debt = dict_debts.get(total, None)
+                if debt is None:
+                    print('Não achou igual')
+                    for i in range(2, 7):
+                        keys = []
+                        for key in dict_debts.keys():
+                            for j in range(len(dict_debts[key])):
+                                keys.append(key)
+                        s = {sum(c):c for c in combinations(keys, i)}
+                        print("#### Combinação  = "+str(i))
+                        print(s)
+                        if not s:
+                            print('Finalizou procura')
+                            break
+                        debts = s.get(total, None)
+                        if not debts is None:
+                            print('Achou débitos somados iguais')
+                            ds = []
+                            for value in set(debts):
+                                for j in range(debts.count(value)):
+                                    ds.append(dict_debts[value][j])
+                            break
+                else:
+                    ds = [debt[0],]
+            debts_to_pay = sorted(sorted(sorted(sorted(ds, key=lambda x: x.id), key=lambda x: x.debt_info.type), key=lambda x:x.debt_info.year),  key=lambda x: x.debt_info.month) 
+            
             if not debts_to_pay:
                 self.student.balance = total
             for debt in debts_to_pay:
@@ -170,7 +212,7 @@ class Credit(models.Model):
                     mes = "Pagamento parcial Realizado: %s\n\nO PET Agradece sua contribuição.\n\nAtenciosamente,\n\nComissão de Financeiro do PET Ciência e Tecnologia"%(str(debt.debt_info) + '\nValor: R$' + str(total))
                     from_email = settings.DEFAULT_FROM_EMAIL
                     to_list=[self.student.email,]
-                    send_mail('Pagamento parcial - '+str(debt.debt_info),mes,from_email,to_list,fail_silently=True)
+                    EmailThread('Pagamento parcial - '+str(debt.debt_info),mes,from_email,to_list).start()
                     total = 0
         super(Credit, self).save()
 
