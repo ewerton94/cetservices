@@ -40,7 +40,7 @@ class DebtInfo_Admin(admin.ModelAdmin):
 class EntranceAdmin(admin.ModelAdmin):
     actions = (get_value,)
 
-
+admin.site.register(Email)
 admin.site.register(Student)
 admin.site.register(Entrance, EntranceAdmin)
 admin.site.register(DebtInfo,  DebtInfo_Admin)

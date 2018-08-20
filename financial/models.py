@@ -22,6 +22,21 @@ class EmailThread(threading.Thread):
     def run (self):
         send_mail(self.subject, self.html_content, self.from_email, self.recipient_list, fail_silently=True)
 
+class Email(models.Model):
+    subject = models.CharField(max_length=300)
+    message = models.TextField()
+    def __unicode__(self):
+        if len(self.message.split()) >6:
+            return self.subject + ": " + " ".join(self.message.split()[:5]) + "..."
+        else:
+            return self.subject + self.message
+    if sys.version_info[0] >= 3: # Python 3
+        def __str__(self):
+            return self.__unicode__()
+    else:  # Python 2
+        def __str__(self):
+            return self.__unicode__().encode('utf8')
+
 class Student(models.Model):
     """
     Classe que representa a tabela Petiano

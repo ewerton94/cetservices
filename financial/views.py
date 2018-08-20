@@ -4,7 +4,7 @@ import pandas as pd
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
 from io import BytesIO as IO
-from .models import Debt, Entrance, DebtInfo, Student, EmailThread
+from .models import Debt, Entrance, DebtInfo, Student, EmailThread, Email
 from .forms import EntranceForm, CreditForm
 from django.core.mail import send_mail
 from django.conf import settings
@@ -86,9 +86,10 @@ def make_penalties(request):
 def send_email_situation(request, id):
     for student in get_debt_description():
         if int(student['id'])==int(id):
-            msg = 'Olá %s, já observou como o dia está lindo? Os passaros cantam, o céu está azul e as árvores balançam. Um belo dia para pagar uma de suas dívidas, não acha? Segue abaixo a sua dívida com o PET CT: \n\n%s\n\nValor total a pagar: %.2f'%(student['nome'], student['description'], student['total'])
+            email_ = Email.objects.all()[0]
+            msg = 'Olá %s,\n\n%s \n\nSegue abaixo a sua dívida com o PET CT: \n\n%s\n\nValor total a pagar: %.2f'%(student['nome'], email_.message, student['description'], student['total'])
             EmailThread(
-                'Oi, Coleguinha. Mensagem pra você!!! :)',
+                email_.subject,
                 msg,
                 settings.DEFAULT_FROM_EMAIL,
                 [student['email']],
@@ -99,10 +100,10 @@ def send_email_situation(request, id):
 
 def send_mail_to_debtors(request):
     for student in get_debt_description():
-       
-        msg = 'Olá %s, já observou como o dia está lindo? Os passaros cantam, o céu está azul e as árvores balançam. Um belo dia para pagar uma de suas dívidas, não acha? Segue abaixo a sua dívida com o PET CT: \n\n%s\n\nValor total a pagar: %.2f'%(student['nome'], student['description'], student['total'])
+        email_ = Email.objects.all()[0]
+        msg = 'Olá %s,\n\n%s  \n\nSegue abaixo a sua dívida com o PET CT: \n\n%s\n\nValor total a pagar: %.2f'%(student['nome'], email_.message, student['description'], student['total'])
         EmailThread(
-            'Oi, Coleguinha. Mensagem pra você!!! :)',
+            email_.subject,
             msg,
             settings.DEFAULT_FROM_EMAIL,
             [student['email']],
