@@ -21,7 +21,7 @@
         </div></div>
       {% endfor %}
       <div class="row">
-         <a href="/"><div class="col-md-3 col-sm-6 col-xs-12">
+         <a href="{{ BASE_URL_SITE }}/"><div class="col-md-3 col-sm-6 col-xs-12">
                 <div class="info-box">
                     <span class="info-box-icon bg-blue"><i class="fa fa-home"></i></span>
       
@@ -59,11 +59,11 @@
                 <nav aria-label="Page navigation example">
                         <ul class="pagination justify-content-center">
                           <li class="page-item">
-                            <a class="page-link" href="{% if date_before_month %}/monthly_entrances/{{ date_before_month }}{% else %}#{% endif %}">Mês anterior</a>
+                            <a class="page-link" href="{% if date_before_month %}{{ BASE_URL_SITE }}/monthly_entrances/{{ date_before_month }}{% else %}#{% endif %}">Mês anterior</a>
                           </li>
                           <li class="page-item"><a class="page-link" href="#">Mês atual</a></li>
                           <li class="page-item {% if not date_after_month %}disabled{% endif %}">
-                            <a class="page-link " href="{% if date_after_month %}/monthly_entrances/{{ date_after_month }}{% else %}#{% endif %}">Próximo mês</a>
+                            <a class="page-link " href="{% if date_after_month %}{{ BASE_URL_SITE }}/monthly_entrances/{{ date_after_month }}{% else %}#{% endif %}">Próximo mês</a>
                           </li>
                         </ul>
                       </nav>
