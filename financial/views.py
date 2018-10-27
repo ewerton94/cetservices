@@ -10,6 +10,8 @@ from django.core.mail import send_mail
 from django.conf import settings
 import sys
 from django.contrib import messages
+from datetime import datetime
+from dateutil.relativedelta import relativedelta
 
 if sys.version_info[0] < 3:
     reload(sys)  
@@ -73,7 +75,30 @@ def home(request):
         student = Student.objects.get(name=desc['nome'])
         student.total = desc['total']
         students.append(student)
-    return render(request, 'home.html', {'entrances': entrances, 'cash': cash, 'forms': forms, 'students': students, 'BASE_URL_SITE': settings.BASE_URL_SITE})
+    now = datetime.now()
+    date = '%i/%i'%(now.month, now.year)
+    return render(request, 'home.html', {'entrances': entrances, 'cash': cash, 'forms': forms, 'students': students, 'BASE_URL_SITE': settings.BASE_URL_SITE, 'date': date})
+
+def monthly_entrances(request, month, year):
+    entrances = Entrance.objects.filter(
+        created__year__gte=year,
+        created__month__gte=month,
+        created__year__lte=year,
+        created__month__lte=month
+    )
+    cash = round(sum([e.value for e in entrances]), 2)
+    entrances = entrances.order_by('-id')
+    now = datetime.now()
+    corrent = datetime(year=int(year), month=int(month), day=1)
+    if now.month==int(month) and now.year>=int(year):
+        date_after_month = None
+    else:
+        date_after_month = corrent + relativedelta(months=1)
+        date_after_month = '%i/%i'%(date_after_month.month, date_after_month.year)
+    date_before_month = corrent - relativedelta(months=1)
+    date_before_month = '%i/%i'%(date_before_month.month, date_before_month.year)
+    return render(request, 'entrances.html', {'entrances': entrances, 'cash': cash, 'BASE_URL_SITE': settings.BASE_URL_SITE, 'month': month, 'year': year, 'date_after_month': date_after_month, 'date_before_month': date_before_month })
+
 
 def make_penalties(request):
     for debt_info in DebtInfo.objects.filter(type='1'):

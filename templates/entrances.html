@@ -21,61 +21,30 @@
         </div></div>
       {% endfor %}
       <div class="row">
-       {% if user.is_staff %}
-       <a href="{{ BASE_URL_SITE }}/debtors.xlsx"><div class="col-md-3 col-sm-6 col-xs-12">
-          <div class="info-box">
-            <span class="info-box-icon bg-green"><i class="fa fa-file-excel-o"></i></span>
-
-            <div class="info-box-content">
-              <span class="header">{% trans 'Exportar devedores para excel' %}</span>
-            </div>
-            <!-- /.info-box-content -->
-          </div>
-          <!-- /.info-box -->
-        </div>
-         </a>
-         {% endif %}
-        
+         <a href="/"><div class="col-md-3 col-sm-6 col-xs-12">
+                <div class="info-box">
+                    <span class="info-box-icon bg-blue"><i class="fa fa-home"></i></span>
+      
+                  <div class="info-box-content">
+                    <span class="header">Voltar para o início</span>
+                    
+                  </div>
+                  <!-- /.info-box-content -->
+                </div>
+                <!-- /.info-box -->
+              </div></a>
               <a href="#"><div class="col-md-3 col-sm-6 col-xs-12">
           <div class="info-box">
               <span class="info-box-icon bg-blue"><i class="fa fa-usd"></i></span>
 
             <div class="info-box-content">
-              <span class="header">Valor Atual:</span>
+              <span class="header">Saldo do mês:</span>
               <h3>R$ {{ cash }}</h3>
             </div>
             <!-- /.info-box-content -->
           </div>
           <!-- /.info-box -->
         </div></a>
-        {% if user.is_staff %}
-        <a href="{{ BASE_URL_SITE }}/make_penalties"><div class="col-md-3 col-sm-6 col-xs-12">
-            <div class="info-box">
-                <span class="info-box-icon bg-red"><i class="fa fa-exclamation-triangle"></i></span>
-  
-              <div class="info-box-content">
-                <span class="header">Gerar</span>
-                <h3>MULTAS</h3>
-              </div>
-              <!-- /.info-box-content -->
-            </div>
-            <!-- /.info-box -->
-          </div></a>
-          
-          <a href="{{ BASE_URL_SITE }}/send_mail_to_debtors"><div class="col-md-3 col-sm-6 col-xs-12">
-            <div class="info-box">
-                <span class="info-box-icon bg-yellow"><i class="fa fa-envelope"></i></span>
-  
-              <div class="info-box-content">
-                <span class="header">Email</span>
-                <h3>Cobranças</h3>
-              </div>
-              <!-- /.info-box-content -->
-            </div>
-            <!-- /.info-box -->
-          </div></a>
-        <!-- ./col -->
-        {% endif %}
       </div>
       
       
@@ -83,10 +52,21 @@
       <!-- /.row -->
       <!-- Main row -->
       <div class="row">
+            
         <!-- Left col -->
         <section class="col-lg-7 connectedSortable">
           
-          
+                <nav aria-label="Page navigation example">
+                        <ul class="pagination justify-content-center">
+                          <li class="page-item">
+                            <a class="page-link" href="{% if date_before_month %}/monthly_entrances/{{ date_before_month }}{% else %}#{% endif %}">Mês anterior</a>
+                          </li>
+                          <li class="page-item"><a class="page-link" href="#">Mês atual</a></li>
+                          <li class="page-item {% if not date_after_month %}disabled{% endif %}">
+                            <a class="page-link " href="{% if date_after_month %}/monthly_entrances/{{ date_after_month }}{% else %}#{% endif %}">Próximo mês</a>
+                          </li>
+                        </ul>
+                      </nav>
 
 
 
@@ -104,7 +84,7 @@
             <div class="box box-success">
      <div class="box-header with-border">
       <i class="fa fa-files-o"></i>
-       <h3 class="box-title">Últimas movimentações</h3>
+       <h3 class="box-title">Movimentações ({{ month }}/{{ year }})</h3>
 
        <div class="box-tools pull-right">
          <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
@@ -135,54 +115,11 @@
  
 </tbody>
 </table>
-<br>
-<p class="text-center"><a href="/monthly_entrances/{{ date }}">Ver todas as movimentações</a>
-</p>
                   
                    </div>
 
    </div>
 
-   <div class="box box-danger">
-    <div class="box-header with-border">
-     <i class="fa fa-files-o"></i>
-      <h3 class="box-title">Devedores</h3>
-
-      <div class="box-tools pull-right">
-        <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
-        </button>
-        <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
-      </div>
-    </div>
-
-    <div class="box-body no-padding">
-                 
-                         <table class="table">
-<thead>
-<tr>
-<th>{% blocktrans  %}Valor{% endblocktrans %}</th>
-<th>{% blocktrans  %}Petiano{% endblocktrans %}</th>
-{% if user.is_staff %}<th>{% blocktrans  %}Opções{% endblocktrans %}</th>{% endif %}
-</tr>
-</thead>
-<tbody>
-{% for entrance in students %}
-<tr>
-<td>
-  {% if entrance.value >= 0 %} <b style="color:darkred">+ {{ entrance.total }}</b>
-  {% else %} <b style="color:darkred">{{ entrance.total }}</b> {% endif %}
-</td>
-<td>{{ entrance.name }}</td>
-{% if user.is_staff %}<td><a href="{{ BASE_URL_SITE }}/send_email_situation/{{ entrance.id }}"><i class="fa fa-envelope"></i></a></td>{% endif %}
-</tr>
-{% endfor %}
-
-</tbody>
-</table>
-                 
-                  </div>
-
-  </div>
                       
                       
                       
